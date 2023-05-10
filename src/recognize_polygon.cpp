@@ -5,6 +5,7 @@ using namespace cv;
 // 定义变量用于追踪条的控制
 struct TrackParameters
 {
+    
     Mat img1;           // 用于显示的原图像
     Mat img2;           // 最终图像，在其中识别出多边形
     int thresholdValue; // 追踪条对应的阈值
