@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+project(recognize_polygon)
+add_executable(mainexe main.cpp src/recognize_polygon.cpp)
+find_package(OpenCV REQUIRED)
+target_include_directories(mainexe PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(mainexe ${OpenCV_LIBS})
+include_directories(${CMAKE_SOURCE_DIR}/include)
