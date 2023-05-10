@@ -4,7 +4,7 @@ void Run()
 {
     // 读取图像并进行识别
     RecognizePolygon polygon;
-    polygon.img = imread("/home/peng-ub/3.jpg");
+    polygon.img = imread("/home/peng-ub/school_robo/high/4.jpg");
     imshow("SRC",polygon.img);
     polygon.find();
     polygon.show();
