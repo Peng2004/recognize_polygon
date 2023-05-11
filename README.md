@@ -8,9 +8,11 @@
 
 #### 一、文件说明
 
-#### 二、代码讲解
+#### 二、low和middle讲解
 
-#### 三、编写思路
+#### 三、high讲解
+
+#### 四、编写思路
 
 +++
 
@@ -22,7 +24,53 @@
 
 2、.vscode文件里放置环境配置的相关文件，此外还有一个CMakeLists.txt。
 
-### 二、代码讲解
+### 二、low和middle讲解
+
+#### 1、low
+
+~~~c++
+	cvtColor(img_copy, img_copy, COLOR_BGR2GRAY);
+    Canny(img_copy, img_copy, 20, 50);
+    morphologyEx(img_copy, img_copy, MORPH_CLOSE, ker);
+    findContours(img_copy, polygons, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point());
+    for (int j = 0; j < polygons.size(); j++)
+    {
+        vector<Point> result;
+        double peri = arcLength(polygons[j], true);
+        approxPolyDP(polygons[j], result, 0.03 * peri, true);
+        results.push_back(result);
+    }
+~~~
+
+首先转换为灰度图像，用 Canny 检测边缘，然后进行闭运算，填充边界，用 findContours检测轮廓，用 approxPolyDP进行多边形拟合，最后，将拟合结果存储在 results 中返回。
+
+#### 2、middle
+
+~~~c++
+	Point seedPoint(1, 1);
+    Scalar newVal(255, 255, 255);
+    int loDiff = 20;
+    int upDiff = 20;
+    floodFill(img_copy, seedPoint, newVal, 0, cv::Scalar::all(loDiff), cv::Scalar::all(upDiff));
+    Mat ker = getStructuringElement(0, Size(3, 3));
+    cvtColor(img_copy, img_copy, COLOR_BGR2GRAY);
+    Canny(img_copy, img_copy, 20, 50);
+    morphologyEx(img_copy, img_copy, MORPH_CLOSE, ker);
+    findContours(img_copy, polygons, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point());
+    for (int j = 0; j < polygons.size(); j++)
+    {
+        vector<Point> result;
+        double peri = arcLength(polygons[j], true);
+        approxPolyDP(polygons[j], result, 0.03 * peri, true);
+        results.push_back(result);
+    }
+~~~
+
+首先定义 `seedPoint`，为需填充的像素值，然后定义 `newVal`，表示填充白色，接着定义loDiff` 和 `upDiff`，是阈值的下限和上限，最后使用floodFill` 函数，对图像 进行填充。转换为灰度图像，用 Canny 检测边缘，然后进行闭运算，填充边界，用 findContours检测轮廓，用 approxPolyDP进行多边形拟合，最后，将拟合结果存储在 results 中返回。
+
+#### 
+
+### 三、high讲解
 
 #### 1、设置类
 
@@ -221,7 +269,7 @@ int counts[4] = {0};
 
 
 
-### 三、编写思路
+### 四、编写思路
 
 1、本人试过很多种方法对轮廓进行预处理，包括中值滤波；`split`成三个通道分别识别再合成，以及二值化等等，最后上述图像预处理的方法，是在本人尝试过的方法中轮廓最清晰的一种。
 
