@@ -2,10 +2,62 @@
 
 using namespace cv;
 
+void RecognizePolygon::find_low()
+{
+    vector<vector<Point>> polygonsBegin;
+    Mat ker = getStructuringElement(0, Size(3, 3));
+    Mat img_copy;
+    img.copyTo(img_copy);
+    // 将图像灰度化，检测边缘，闭运算
+    cvtColor(img_copy, img_copy, COLOR_BGR2GRAY);
+    Canny(img_copy, img_copy, 20, 50);
+    morphologyEx(img_copy, img_copy, MORPH_CLOSE, ker);
+    // 识别轮廓
+    findContours(img_copy, polygonsBegin, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point());
+    // 拟合多边形
+    for (int j = 0; j < polygonsBegin.size(); j++)
+    {
+        vector<Point> result;
+        double peri = arcLength(polygonsBegin[j], true);
+        approxPolyDP(polygonsBegin[j], result, 0.03 * peri, true);
+        results.push_back(result);
+    }
+}
+
+void RecognizePolygon::find_middle()
+{
+    vector<vector<Point>> polygonsBegin;
+    Mat img_copy;
+    img.copyTo(img_copy);
+    cv::Point seedPoint(1, 1);
+
+    // 设置填充的颜色和阈值
+    cv::Scalar newVal(255, 255, 255);
+    int loDiff = 20;
+    int upDiff = 20;
+    // 对图像进行填充
+    cv::floodFill(img_copy, seedPoint, newVal, 0, cv::Scalar::all(loDiff), cv::Scalar::all(upDiff));
+    Mat ker = getStructuringElement(0, Size(3, 3));
+    // 将图像灰度化，检测边缘，闭运算
+    cvtColor(img_copy, img_copy, COLOR_BGR2GRAY);
+    Canny(img_copy, img_copy, 20, 50);
+    morphologyEx(img_copy, img_copy, MORPH_CLOSE, ker);
+    // 识别轮廓
+    findContours(img_copy, polygonsBegin, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point());
+    // 拟合多边形
+    for (int j = 0; j < polygonsBegin.size(); j++)
+    {
+        vector<Point> result;
+        double peri = arcLength(polygonsBegin[j], true);
+        approxPolyDP(polygonsBegin[j], result, 0.03 * peri, true);
+        results.push_back(result);
+    }
+}
+
 // 定义变量用于追踪条的控制
 struct TrackParameters
 {
-    
+
     Mat img1;           // 用于显示的原图像
     Mat img2;           // 最终图像，在其中识别出多边形
     int thresholdValue; // 追踪条对应的阈值
@@ -84,7 +136,7 @@ void trackThreshold(int val, void *)
     imshow("Threshold Adjust", track.img2);
 }
 
-void RecognizePolygon::find()
+void RecognizePolygon::find_high()
 {
 
     // 显示原图并创建追踪条
@@ -126,6 +178,15 @@ string RecognizePolygon::getShapeType(int numSides)
     string type;
     switch (numSides)
     {
+    case 3:
+        type = "Poly-3";
+        break;
+    case 4:
+        type = "Poly-4";
+        break;
+    case 5:
+        type = "Poly-5";
+        break;
     case 6:
         type = "Poly-6";
         break;
@@ -144,7 +205,7 @@ string RecognizePolygon::getShapeType(int numSides)
 
 void RecognizePolygon::show()
 {
-    int counts[4] = {0};
+    int counts[7] = {0};
     // 显示识别结果并统计多边形类型数目
     for (int i = 0; i < results.size(); i++)
     {
@@ -154,20 +215,20 @@ void RecognizePolygon::show()
         putText(img, type, rect.tl(), 2, 1, Scalar(255, 255, 255));
         if (results[i].size() == 6 || results[i].size() == 7 || results[i].size() == 8)
         {
-            counts[results[i].size() - 6]++;
+            counts[results[i].size() - 2]++;
         }
         else
         {
-            counts[3]++;
+            counts[0]++;
         }
     }
 
     // 显示每种类型的个数
-    for (int j = 0; j < 4; j++)
+    for (int j = 0; j < 7; j++)
     {
         if (counts[j] > 0)
         {
-            string type = getShapeType(j + 6);
+            string type = getShapeType(j + 2);
             cout << type << ": " << counts[j] << endl;
         }
     }
