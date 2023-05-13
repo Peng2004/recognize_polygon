@@ -20,9 +20,11 @@
 
 ### 一、文件说明
 
- 1、代码部分共有三个文件，分别为include/recognize_polygon.h，为头文件；src/recognize_polygon.cpp，为大部分主要的源文件；main.cpp，为main函数的主文件。
+ 1、代码部分在文件夹`reco_poly`里面，
 
-2、.vscode文件里放置环境配置的相关文件，此外还有一个CMakeLists.txt。
+2、include/recognize_polygon.h，为头文件；src/recognize_polygon.cpp，为大部分主要的源文件；main.cpp，为main函数的主文件。
+
+3、.vscode文件里放置环境配置的相关文件，此外还有一个CMakeLists.txt。
 
 ### 二、low和middle讲解
 
