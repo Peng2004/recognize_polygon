@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/peng-ub/recognize_polygon/include",
+                "/home/peng-ub/recognize_polygon/reco_poly/include",
                 "/usr/local/include/opencv4"
             ],
             "defines": [],
